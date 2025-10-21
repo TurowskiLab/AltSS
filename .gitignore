@@ -3,6 +3,16 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
+# Defined by me
+test.ipynb
+.vscode
+.snakemake
+alignment/
+BigWig/
+FeatureCounts/
+rmats-turbo/
+bam_lists/
+
 # User-specific files
 *.rsuser
 *.suo
