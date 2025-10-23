@@ -24,6 +24,7 @@ Tested in WSL2 and linux server
 
     ```bash
     conda env create -n snakemake -f envs/snakemake.yml
+    conda env create -n rmats -f envs/rmats.yml
     ```
 
 3. Activate rmats environment, and compile rmats:
