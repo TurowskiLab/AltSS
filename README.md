@@ -86,3 +86,15 @@ path/to/file_1.bam,path/to/file_2.bam,...,path/to/file_n.bam
 ```
 
 **NOTE:** Very first run of the SnakeMake file ```SM_RNAseq.smk``` will initialize new conda environments. This may take a several minutes.
+
+## Troubleshooting
+
+### ERROR: libgsl.so.25: cannot open shared object file: No such file or directory
+
+If rMATS finishes with the aforementioned error, it means that the program is not locating the correct path for that function. Modify this by using the follow bash command, while in the snakemake environment.
+
+```bash
+export LD_LIBRARY_PATH=path/to/rmats_pipeline/.snakemake/conda/environement_created_for_rmats/lib
+```
+
+Note: Usually the environment created is a long string of numbers and letters in random combinations. Check the snakemake run printouts after rule run_rmats. It should be displaying `activating conda environment:` use that directory to export the library path in the `lib` folder.

@@ -2,10 +2,10 @@ import re, os, subprocess
 import pandas as pd
 
 ########## CHANGE THESE ##########
-raw_path = "" #Path to raw RNA-seq data
+raw_path = "/home/rgoitia/00_raw_data/01_Choquet_POLR3-HLD/" #Path to raw RNA-seq data
 #references
-STAR_INDEX = "" #Path to STAR index
-GTF = "" #Path to reference GTF file
+STAR_INDEX = "/home/rgoitia/01_reference_sequences/hg41/hg41_STAR_index/" #Path to STAR index
+GTF = "/home/rgoitia/01_reference_sequences/hg41/hg41_annotation_gencode_tRNA_rRNA.gtf" #Path to reference GTF file
 ##################################
 
 #parsing file names and preparatory jobs

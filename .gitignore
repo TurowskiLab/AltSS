@@ -5,6 +5,7 @@
 
 # Defined by me
 test.ipynb
+names.tab
 .vscode
 .snakemake
 alignment/
@@ -12,6 +13,7 @@ BigWig/
 FeatureCounts/
 rmats-turbo/
 bam_lists/
+rmats_output/
 
 # User-specific files
 *.rsuser
