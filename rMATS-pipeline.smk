@@ -114,8 +114,8 @@ rule featureCounts:
         input:
                 bam = expand("alignment/{sample}.bam",sample=SAMPLES) #use list of files
         output:
-                multi = "FetaureCounts/featureCounts_multimappers.list",
-                uniq = "FetaureCounts/featureCounts_uniq.list"
+                multi = "FeatureCounts/featureCounts_multimappers.list",
+                uniq = "FeatureCounts/featureCounts_uniq.list"
         params:
                 gtf=GTF
         conda:
