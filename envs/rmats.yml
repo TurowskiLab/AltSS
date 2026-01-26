@@ -109,4 +109,3 @@ dependencies:
       - cython==0.29.21
       - numpy==1.19.5
       - scipy==1.5.4
-prefix: /home/rgoitia/miniforge3/envs/rmats

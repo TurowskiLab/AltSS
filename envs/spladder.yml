@@ -60,5 +60,3 @@ dependencies:
     - statsmodels==0.14.1
     - tzdata==2025.3
     - zipp==3.20.2
-
-prefix: "/home/rgoitia/miniforge3/envs/spladder"

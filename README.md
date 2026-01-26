@@ -1,18 +1,18 @@
-# rMATS-pipeline
+# AltSS
 
-Pipeline from RNA-Seq data to rMATS alternative splicing events
+Alternative Splicing Snakemake pipeline, to process data from RNA-Seq to alternative splicing prediction. Only working with rMATS [1] and SplAdder [2] tools so far.
 
-## Introduction
-
-This repository contains instructions to run rMATS Turbo (refer to <https://github.com/Xinglab/rmats-turbo>) on RNA-seq data after alignment. This is currently utilizing BAM files from different sample groups and a GTF annotation file to identify alternative splicing events.
+[1]<https://github.com/Xinglab/rmats-turbo><br>
+[2]<https://spladder.readthedocs.io/en/latest/index.html>
 
 ## Requirements
 
 Tested in WSL2 and linux server
 
 - Conda 24.11.3
+- GTF and STAR index files for respective genomic release (Genecode or Ensembl).
 
-## 1. Prepare rMATS environment
+## 1.1. Prepare rMATS environment
 
 1. Download `rmats-turbo` in a folder with the same name.
 
@@ -20,7 +20,7 @@ Tested in WSL2 and linux server
     git clone https://github.com/Xinglab/rmats-turbo.git
     ```
 
-2. Create conda environment for snakemake
+2. Create conda environment for Snakemake and rMATS.
 
     ```bash
     conda env create -n snakemake -f envs/snakemake.yml
@@ -35,19 +35,33 @@ Tested in WSL2 and linux server
     ./build_rmats
     ```
 
-4. Modify GTF file path in the `SM_RNAseq.smk` file.
-***Modify this with the actual name of the GTF file.
+## 1.2. Prepare SplAdder environment
+
+1. Create conda environment for Snakemake and SplAdder.
+
+    ```bash
+    conda env create -n snakemake -f envs/snakemake.yml
+    conda env create -n spladder -f envs/spladder.yml
+    ```
 
 ## 2. Prepare RNA-seq files
 
 To correctly run the snakemake file, prepare each of the filenames inside the RNA-seq data in the follow way:
+
+### For paired reads
 
 ```text
 GlobalSampleName_GroupName*_SampleNumber_1.fastq.gz
 GlobalSampleName_GroupName*_SampleNumber_2.fastq.gz
 ```
 
-*Group name should be annotated as `wt` for control samples, and is recommended to annotate the condition sample as `mut`.
+### For single reads
+
+```text
+GlobalSampleName_GroupName*_SampleNumber.fastq.gz
+```
+
+*Group name corresponds to the condition and control samples.
 
 ### Example
 
@@ -57,13 +71,27 @@ HEK293_mut_1_1.fastq.gz     HEK293_mut_1_2.fastq.gz
 ...
 ```
 
-## 3. Modify Snakemake File paths
+## 3. Configure Pipeline
 
-Edit `rMATS-pipeline.smk` variables:
+Edit `config.yaml` with the following variables:
 
-- **raw_path**: For directory path to RNA-seq raw data to be used.
-- **STAR_INDEX**: For directory path to STAR index.
-- **GTF**: For directory path to genomic GTF reference data.
+### Required Parameters
+
+- **raw_path**: Directory path to RNA-seq raw data to be used.
+- **gtf**: Path to genomic GTF reference file.
+- **fasta**: Path to genome FASTA file (required for generating a new STAR index).
+- **outdir**: Output directory for results.
+- **read_length**: Read length of your sequencing data. Default: 50.
+
+### Optional Parameters
+
+- **read_type**: Either "paired" or "single". Default: "paired".
+- **control_name**: Name of the control group for identification of the group in the name file
+- **nthread**: Number of threads to use. Default: 8 cores.
+
+### STAR Index Generation
+
+The pipeline can automatically generate a STAR index. This requires significant RAM (typically 30-40GB for human genome). Ensure your system has sufficient memory or use lower number of cores (nthread).
 
 ## 4. Run snakemake
 
@@ -71,21 +99,17 @@ Activate snakemake environments and run snakemake
 
 ```bash
 conda activate snakemake
-snakemake -c20 --use-conda -s rMATS-pipeline.smk -j4
+snakemake -c --use-conda -s rMATS-pipeline.smk --configfile config.yaml
 ```
 
-## Preparing BAM files
-
-- Done automatically by the snakemake
-- Place BAM files in `bam_files` directory.
-- Modify the two text files (`b1.txt` and `b2.txt`) with comma-separated path values to the BAM files from two different sample groups. If you are analyzing a single group, use only `b1.txt`.
-- The format of the files should be modified as follows:
+Or for SplAdder:
 
 ```bash
-path/to/file_1.bam,path/to/file_2.bam,...,path/to/file_n.bam
+conda activate snakemake
+snakemake -c --use-conda -s SplAdder-pipeline.smk --configfile config.yaml
 ```
 
-**NOTE:** Very first run of the SnakeMake file ```SM_RNAseq.smk``` will initialize new conda environments. This may take a several minutes.
+**NOTE:** Very first run of the SnakeMake file, it will initialize new conda environments. This may take a several minutes.
 
 ## Troubleshooting
 
@@ -96,5 +120,3 @@ If rMATS finishes with the aforementioned error, it means that the program is no
 ```bash
 export LD_LIBRARY_PATH=path/to/rmats_pipeline/.snakemake/conda/environement_created_for_rmats/lib
 ```
-
-Note: Usually the environment created is a long string of numbers and letters in random combinations. Check the snakemake run printouts after rule run_rmats. It should be displaying `activating conda environment:` use that directory to export the library path in the `lib` folder.
