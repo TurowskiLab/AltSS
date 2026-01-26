@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# Check if all three arguments are provided
-if [ "$#" -ne 3 ]; then
-    echo "Usage: $0 <variable_1> <input_dir> <output_dir>"
+# Check if all four arguments are provided
+if [ "$#" -ne 4 ]; then
+    echo "Usage: $0 <variable_1> <input_dir> <output_dir> <tool_type>"
     exit 1
 fi
 
@@ -10,6 +10,13 @@ fi
 A="$1"
 input_dir="$2"
 output_dir="$3"
+tool_type="$4"
+
+# Validate tool_type
+if [ "$tool_type" != "rmats" ] && [ "$tool_type" != "spladder" ]; then
+    echo "Error: tool_type must be either 'rmats' or 'spladder', got '$tool_type'"
+    exit 1
+fi
 
 # Check if input directory exists
 if [ ! -d "$input_dir" ]; then
@@ -25,15 +32,9 @@ fi
 # Create an array to store the filenames
 files=()
 
-# Loop through files in the folder containing variable A
-# while IFS= read -r -d '' file; do
-#     if [[ $file == *".bam" ]]; then
-#         files+=("$file")
-#     fi
-# done < <(find "$folder_in" -type f -name "*$A*.bam" -print0)
 while IFS= read -r -d '' file; do
     files+=("$file")
-done < <(find "$input_dir" -type f -name "*$A*.bam" -print0)
+done < <(find "$input_dir" -type f -name "*$A*.bam" ! -name "*STAR*" -print0)
 
 # Check if any files containing variable A were found
 if [ ${#files[@]} -eq 0 ]; then
@@ -44,8 +45,17 @@ fi
 # Create the output filename
 output_filename="${output_dir}/bam_${A}.txt"
 
-# Concatenate all filenames separated by comma and save to the output file
-printf "%s," "${files[@]}" | sed 's/,$//' > "$output_filename"
-printf "\n" >> "$output_filename"
+# Concatenate based on tool_type
+if [ "$tool_type" = "rmats" ]; then
+    # For rmats: concatenate separated by comma
+    printf "%s," "${files[@]}" | sed 's/,$//' > "$output_filename"
+    printf "\n" >> "$output_filename"
+elif [ "$tool_type" = "spladder" ]; then
+    # For spladder: concatenate in lines (one file per line)
+    printf "%s\n" "${files[@]}" > "$output_filename"
+else
+    echo "Error: Unsupported tool_type '$tool_type'"
+    exit 1
+fi
 
 echo "List of files containing '$A' saved to '$output_filename'"
