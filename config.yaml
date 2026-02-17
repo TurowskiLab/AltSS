@@ -1,0 +1,10 @@
+raw_path: /home/rgoitia/00_raw/02_LosBruna_RAW2647_STAT2_GSE193639/
+gtf: /home/rgoitia/01_refSeq/m34/gencode.vM34.annotation.gtf
+fasta: /home/rgoitia/01_refSeq/m34/GRCm39.primary_assembly.genome.fa
+outdir: /home/rgoitia/02_results/02_LosBruna_RAW2647_STAT2_GSE193639/
+read_length: 300
+
+# Optional parameters
+# read_type: single  # "paired" or "single", Default: "paired"
+control_name: 34C # Default: "control"
+# nthread: 8  # Default: 8
